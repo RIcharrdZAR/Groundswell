@@ -15,6 +15,14 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 
 // ============================================================================
+// Internal Imports
+// ============================================================================
+// Meter seeder: ensures default meters exist on startup
+const ensureMeters = require('./seeders/ensureMeters');
+// Meter routes: API endpoints for managing meters
+const metersRouter = require('./routes/meters');
+
+// ============================================================================
 // Application Setup
 // ============================================================================
 // Initialize Express application instance
@@ -36,15 +44,21 @@ app.use(express.json());
 mongoose.connect('mongodb://127.0.0.1:27017/groundswell')
   // Log success message when connection is established
   .then(() => console.log('✅ Connected to MongoDB'))
+  // After successful connection, ensure default meters exist
+  .then(() => ensureMeters())
   // Log error message if connection fails
   .catch(err => console.error('MongoDB connection error:', err));
 
 // ============================================================================
 // Routes / API Endpoints
 // ============================================================================
+// Mount meter routes at /api/meters
+// This handles GET /api/meters and GET /api/meters/:id
+app.use('/api/meters', metersRouter);
+
 // Health check endpoint - responds with a simple message to verify API is running
 app.get('/', (req, res) => {
-  res.send('Howzit from Groundswell');
+  res.send('Howzit from Richard Creighton Groundswell Project');
 });
 
 // ============================================================================
